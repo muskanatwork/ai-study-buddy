@@ -3,6 +3,7 @@
 
 
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 function SummaryQuiz() {
   const [topic, setTopic] = useState("");
@@ -12,6 +13,8 @@ function SummaryQuiz() {
   const [loading, setLoading] = useState(false);
   const [score, setScore] = useState(null);
   const [currentQuestion, setCurrentQuestion] = useState(0);
+
+  const navigate = useNavigate();
 
   async function getSummary() {
     setLoading(true);
@@ -33,7 +36,6 @@ function SummaryQuiz() {
     setLoading(false);
   }
 
-  // Start Quiz Button → Get Quiz
   async function startQuiz() {
     setLoading(true);
     setQuiz([]);
@@ -51,6 +53,11 @@ function SummaryQuiz() {
     setQuiz(data.quiz || []);
 
     setLoading(false);
+  }
+
+  // Navigate to Flashcards Page
+  function openFlashcards() {
+    navigate("/flashcards", { state: { topic } });
   }
 
   function handleOptionSelect(qIndex, option) {
@@ -71,7 +78,6 @@ function SummaryQuiz() {
         AI Summary + Quiz
       </h2>
 
-      {/* INPUT */}
       <input
         type="text"
         placeholder="Enter topic"
@@ -80,7 +86,6 @@ function SummaryQuiz() {
         className="w-full p-3 border rounded-lg mb-4 outline-none focus:ring-2 focus:ring-blue-400"
       />
 
-      {/* SUMMARY BUTTON */}
       <button
         onClick={getSummary}
         className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 rounded-lg transition"
@@ -90,7 +95,6 @@ function SummaryQuiz() {
 
       {loading && <p className="text-center mt-4 text-gray-600">Loading...</p>}
 
-      {/* SHOW SUMMARY */}
       {summary && (
         <div className="mt-6 bg-gray-100 p-4 rounded-lg shadow">
           <h3 className="text-lg font-semibold mb-2">Summary:</h3>
@@ -98,17 +102,25 @@ function SummaryQuiz() {
         </div>
       )}
 
-      {/* START QUIZ BUTTON */}
+      {/* START QUIZ + FLASHCARD BUTTONS */}
       {summary && !quiz.length && (
-        <button
-          onClick={startQuiz}
-          className="w-full mt-4 bg-green-600 hover:bg-green-700 text-white font-semibold py-3 rounded-lg"
-        >
-          Start Quiz
-        </button>
+        <div>
+          <button
+            onClick={startQuiz}
+            className="w-full mt-4 bg-green-600 hover:bg-green-700 text-white font-semibold py-3 rounded-lg"
+          >
+            Start Quiz
+          </button>
+
+          <button
+            onClick={openFlashcards}
+            className="w-full mt-3 bg-purple-600 hover:bg-purple-700 text-white font-semibold py-3 rounded-lg"
+          >
+            Flash Cards
+          </button>
+        </div>
       )}
 
-      {/* QUIZ SECTION */}
       {quiz.length > 0 && (
         <div className="mt-6 bg-gray-100 p-4 rounded-lg shadow">
           <h3 className="text-lg font-semibold mb-4">
@@ -163,7 +175,6 @@ function SummaryQuiz() {
         </div>
       )}
 
-      {/* SCORE */}
       {score !== null && (
         <div className="mt-6 p-4 bg-blue-100 border border-blue-300 rounded-lg text-center">
           <h3 className="text-xl font-bold text-blue-700">
@@ -176,4 +187,3 @@ function SummaryQuiz() {
 }
 
 export default SummaryQuiz;
-
