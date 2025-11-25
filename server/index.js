@@ -1,6 +1,4 @@
 
-
-
 import "dotenv/config";
 import express from "express";
 import cors from "cors";
@@ -16,44 +14,72 @@ const model = ai.getGenerativeModel({
   model: "gemini-2.5-flash",
 });
 
-// SUMMARY API
+// SUMMARY API 
 app.post("/summary", async (req, res) => {
   try {
-    const { topic } = req.body;
+    const { topic, level } = req.body;
+
+    let levelInstruction = "";
+
+    if (level === "basic") {
+      levelInstruction = "Explain in very simple, beginner-friendly and easy words. Avoid difficult technical terms.";
+    } else if (level === "intermediate") {
+      levelInstruction = "Explain with moderate detail, simple examples, and slightly deeper concepts.";
+    } else if (level === "advanced") {
+      levelInstruction = "Explain with deep technical concepts, definitions, and advanced-level terminology.";
+    }
 
     const prompt = `
-      Explain the topic "${topic}" in easy and simple language.
-      Write 6–8 lines only.
+      Topic: "${topic}"
+      Level: ${level}
+      ${levelInstruction}
+      Write only 6–8 lines.
     `;
 
     const result = await model.generateContent(prompt);
     const summary = result.response.text();
 
     return res.json({ summary });
+
   } catch (error) {
     console.log(error);
     res.status(500).json({ error: "Error generating summary" });
   }
 });
 
-// QUIZ API
+// QUIZ API 
 app.post("/quiz", async (req, res) => {
   try {
-    const { topic } = req.body;
+    const { topic, level } = req.body;
+
+    let difficultyInstruction = "";
+
+    if (level === "basic") {
+      difficultyInstruction = "Make the questions very simple and easy to understand. Beginner level.";
+    } else if (level === "intermediate") {
+      difficultyInstruction = "Make the questions moderately difficult with little reasoning.";
+    } else if (level === "advanced") {
+      difficultyInstruction = "Make the questions challenging, deep and technical.";
+    }
 
     const prompt = `
-      Generate EXACTLY 5 MCQ questions on "${topic}".
+      Generate EXACTLY 5 MCQs on "${topic}".
+      Difficulty: ${level}
+      ${difficultyInstruction}
+
       Each item must contain:
       - "question"
       - "options": ["A","B","C","D"]
-      - "answer": "A"
-      Return ONLY JSON array. No markdown, no backticks.
+      - "answer": "Possible Answer"
+
+      Return ONLY JSON array.
     `;
 
     const result = await model.generateContent(prompt);
     let text = result.response.text().trim();
 
     text = text.replace(/```json/g, "").replace(/```/g, "");
+    console.log(text)
 
     let quiz;
     try {
@@ -76,7 +102,7 @@ app.post("/flashcards", async (req, res) => {
 
     const prompt = `
       Create 5 flashcards for topic "${topic}".
-      Format as JSON array ONLY:
+      Return JSON array only:
       [
         {"title": "Term 1", "description": "Short explanation"},
         {"title": "Term 2", "description": "Short explanation"},
@@ -87,8 +113,8 @@ app.post("/flashcards", async (req, res) => {
     `;
 
     const result = await model.generateContent(prompt);
-    let text = result.response.text().trim();
 
+    let text = result.response.text().trim();
     text = text.replace(/```json/g, "").replace(/```/g, "");
 
     let flashcards;
