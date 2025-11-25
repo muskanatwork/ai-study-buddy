@@ -15,9 +15,7 @@ function SummaryQuiz() {
   const [score, setScore] = useState(null);
   const [percentage, setPercentage] = useState(null);
   const [submitted, setSubmitted] = useState(false);
-
   const [currentQuestion, setCurrentQuestion] = useState(0);
-
   const [showQuiz, setShowQuiz] = useState(false);
 
   const navigate = useNavigate();
@@ -110,6 +108,33 @@ function SummaryQuiz() {
     setShowQuiz(false);
   }
 
+
+ // mic***********************
+
+function startListening() {
+  const SpeechRecognition =
+    window.SpeechRecognition || window.webkitSpeechRecognition;
+
+  if (!SpeechRecognition) {
+    alert("Speech Recognition not supported");
+    return;
+  }
+
+  const recognition = new SpeechRecognition();
+  recognition.lang = "en-US";
+  recognition.continuous = false;
+
+  recognition.onresult = (event) => {
+    const transcript = event.results[0][0].transcript;
+    setTopic(transcript);  // <- Yeh important line hai
+  };
+
+  recognition.start();
+}
+
+
+
+
   return (
     <div className="max-w-xl mx-auto mt-10 p-6 bg-white shadow-lg rounded-xl">
       <h2 className="text-2xl font-bold text-center mb-6 text-blue-700">
@@ -126,19 +151,28 @@ function SummaryQuiz() {
         <option value="advanced">Advanced</option>
       </select>
 
-      <input
+<input
         type="text"
         placeholder="Enter topic"
         value={topic}
         onChange={(e) => setTopic(e.target.value)}
-        className="w-full p-3 border rounded-lg mb-4"
+        className="w-full p-3 border rounded-lg mb-4 outline-none focus:ring-2 focus:ring-blue-400"
       />
+      <button onClick={startListening}
+      className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 rounded-lg transition"
+      >
+        <p>speak</p>
+       <i class="fa-solid fa-microphone"></i>
+      </button>
 
+      <div className="my-4"></div>
+
+      {/* SUMMARY BUTTON */}
       <button
         onClick={getSummary}
-        className="w-full bg-blue-600 hover:bg-blue-700 text-white p-3 rounded-lg"
+        className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 rounded-lg transition"
       >
-        Get Summary
+      Get Summary
       </button>
 
       {loading && <p className="text-center mt-4">Loading...</p>}
