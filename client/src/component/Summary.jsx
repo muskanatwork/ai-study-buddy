@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 
@@ -53,7 +52,7 @@ function SummaryQuiz() {
     setCurrentQuestion(0);
 
     setTimeLeft(Number(selectedTime));
-    setShowQuiz(true); 
+    setShowQuiz(true);
 
     const res = await fetch("http://localhost:5000/quiz", {
       method: "POST",
@@ -72,9 +71,7 @@ function SummaryQuiz() {
 
     const timer = setInterval(() => {
       setTimeLeft((prev) => {
-        if (prev === 1) {
-          handleSubmit();
-        }
+        if (prev === 1) handleSubmit();
         return prev - 1;
       });
     }, 1000);
@@ -104,76 +101,75 @@ function SummaryQuiz() {
     setPercentage(percent);
     setSubmitted(true);
     setTimeLeft(null);
-
     setShowQuiz(false);
   }
 
+  function startListening() {
+    const SpeechRecognition =
+      window.SpeechRecognition || window.webkitSpeechRecognition;
 
- // mic***********************
+    if (!SpeechRecognition) {
+      alert("Speech Recognition not supported");
+      return;
+    }
 
-function startListening() {
-  const SpeechRecognition =
-    window.SpeechRecognition || window.webkitSpeechRecognition;
+    const recognition = new SpeechRecognition();
+    recognition.lang = "en-US";
+    recognition.continuous = false;
 
-  if (!SpeechRecognition) {
-    alert("Speech Recognition not supported");
-    return;
+    recognition.onresult = (event) => {
+      const transcript = event.results[0][0].transcript;
+      setTopic(transcript);
+    };
+
+    recognition.start();
   }
-
-  const recognition = new SpeechRecognition();
-  recognition.lang = "en-US";
-  recognition.continuous = false;
-
-  recognition.onresult = (event) => {
-    const transcript = event.results[0][0].transcript;
-    setTopic(transcript);  // <- Yeh important line hai
-  };
-
-  recognition.start();
-}
-
-
-
 
   return (
     <div className="max-w-xl mx-auto mt-10 p-6 bg-white shadow-lg rounded-xl">
-      <h2 className="text-2xl font-bold text-center mb-6 text-blue-700">
-        AI Study Buddy
+      <h2 className="text-4xl font-extrabold text-center mb-6 text-blue-700">
+        Meet Your Study Buddy
       </h2>
 
-      <select
-        value={level}
-        onChange={(e) => setLevel(e.target.value)}
-        className="w-full p-3 border rounded-lg mb-4"
-      >
-        <option value="basic">Basic</option>
-        <option value="intermediate">Intermediate</option>
-        <option value="advanced">Advanced</option>
-      </select>
 
-<input
-        type="text"
-        placeholder="Enter topic"
-        value={topic}
-        onChange={(e) => setTopic(e.target.value)}
-        className="w-full p-3 border rounded-lg mb-4 outline-none focus:ring-2 focus:ring-blue-400"
-      />
-      <button onClick={startListening}
-      className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 rounded-lg transition"
-      >
-        <p>speak</p>
-       <i class="fa-solid fa-microphone"></i>
-      </button>
+      <div className="flex flex-col gap-3 mb-5">
 
-      <div className="my-4"></div>
+        <div className="flex items-center gap-3">
+          <input
+            type="text"
+            placeholder="Type something you want to master..."
+            value={topic}
+            onChange={(e) => setTopic(e.target.value)}
+            className="flex-1 p-3 border rounded-lg outline-none focus:ring-2 focus:ring-blue-400"
+          />
 
-      {/* SUMMARY BUTTON */}
-      <button
-        onClick={getSummary}
-        className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 rounded-lg transition"
-      >
-      Get Summary
-      </button>
+          <button
+            onClick={startListening}
+            className="p-3 bg-blue-600 hover:bg-blue-700 text-white rounded-full text-xl flex items-center justify-center"
+          >Speak
+            <i className="fa-solid fa-microphone"></i>
+          </button>
+        </div>
+
+        <div className="flex items-center gap-3">
+          <select
+            value={level}
+            onChange={(e) => setLevel(e.target.value)}
+            className="p-3 border rounded-lg flex-1"
+          >
+            <option value="basic">Basic</option>
+            <option value="intermediate">Intermediate</option>
+            <option value="advanced">Advanced</option>
+          </select>
+
+          <button
+            onClick={getSummary}
+            className="flex-1 bg-gradient-to-r from-blue-500 to-green-400 hover:opacity-90 text-white font-semibold p-3 rounded-lg transition"
+          >
+            Summarize Now
+          </button>
+        </div>
+      </div>
 
       {loading && <p className="text-center mt-4">Loading...</p>}
 
@@ -218,11 +214,10 @@ function startListening() {
         </div>
       )}
 
-      {/* QUIZ */}
       {showQuiz && quiz.length > 0 && (
         <div className="mt-6 bg-gray-100 p-4 rounded-lg">
           <div className="text-center text-red-600 text-xl font-bold mb-4">
-            ⏳ Time Left: {timeLeft}s
+             Time Left: {timeLeft}s
           </div>
 
           <h3 className="text-lg font-semibold mb-4">
@@ -275,7 +270,6 @@ function startListening() {
         </div>
       )}
 
-      {/* SCORE */}
       {submitted && (
         <div className="mt-6 p-4 bg-blue-100 rounded-lg text-center">
           <h3 className="text-2xl font-bold text-green-700">
