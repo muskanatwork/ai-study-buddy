@@ -109,7 +109,6 @@ function SummaryQuiz() {
   }
 
 
- // mic***********************
 
 function startListening() {
   const SpeechRecognition =
@@ -126,7 +125,7 @@ function startListening() {
 
   recognition.onresult = (event) => {
     const transcript = event.results[0][0].transcript;
-    setTopic(transcript);  // <- Yeh important line hai
+    setTopic(transcript);  
   };
 
   recognition.start();
@@ -138,8 +137,7 @@ function startListening() {
   return (
     <div className="max-w-xl mx-auto mt-10 p-6 bg-white shadow-lg rounded-xl">
       <h2 className="text-2xl font-bold text-center mb-6 text-blue-700">
-        AI Study Buddy
-      </h2>
+Meet Your Study Buddy      </h2>
 
       <select
         value={level}
@@ -296,3 +294,5 @@ function startListening() {
 }
 
 export default SummaryQuiz;
+
+
